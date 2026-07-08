@@ -1,6 +1,5 @@
 // Simple API helper - change BASE_URL if backend runs elsewhere
-const BASE_URL = 'http://localhost:5000/api';
-
+const BASE_URL = 'https://shopez-backend-q3kl.onrender.com/api';
 function getToken() { return localStorage.getItem('token'); }
 function setToken(t) { localStorage.setItem('token', t); }
 function clearToken() { localStorage.removeItem('token'); }
