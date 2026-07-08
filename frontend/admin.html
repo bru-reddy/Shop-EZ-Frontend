@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Admin - ShopEZ</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<nav id="nav"></nav>
+<div class="container">
+  <div class="card" id="loginBox" style="max-width:400px;margin:auto;">
+    <h2>Admin Login</h2>
+    <div id="msg"></div>
+    <input id="email" placeholder="Admin Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="adminLogin()">Login</button>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <div class="card">
+      <h2>Add Product</h2>
+      <input id="pname" placeholder="Product Name">
+      <input id="pprice" placeholder="Price" type="number">
+      <input id="pdiscount" placeholder="Discount %" type="number">
+      <textarea id="pdesc" placeholder="Description"></textarea>
+      <button onclick="addProduct()">Add Product</button>
+      <div id="pmsg"></div>
+    </div>
+    <div class="card">
+      <h2>All Orders</h2>
+      <div id="allOrders"></div>
+    </div>
+  </div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+async function adminLogin() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try {
+    const data = await apiRequest('/admin/login', 'POST', { email, password });
+    setToken(data.token);
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadOrders();
+  } catch (err) {
+    document.getElementById('msg').innerHTML = `<p class="error">${err.message}</p>`;
+  }
+}
+
+async function addProduct() {
+  const name = document.getElementById('pname').value;
+  const price = document.getElementById('pprice').value;
+  const discount = document.getElementById('pdiscount').value;
+  const description = document.getElementById('pdesc').value;
+  try {
+    await apiRequest('/admin/products', 'POST', { name, price, discount, description }, true);
+    document.getElementById('pmsg').innerHTML = '<p class="success">Product added!</p>';
+  } catch (err) {
+    document.getElementById('pmsg').innerHTML = `<p class="error">${err.message}</p>`;
+  }
+}
+
+async function loadOrders() {
+  const data = await apiRequest('/admin/orders', 'GET', null, true);
+  document.getElementById('allOrders').innerHTML = data.orders.map(o => `
+    <div class="order-item">
+      <span>${o.user.name} (${o.user.email})</span>
+      <span>₹${o.totalAmount} - ${o.status}</span>
+    </div>`).join('') || '<p>No orders yet.</p>';
+}
+</script>
+</body>
+</html>

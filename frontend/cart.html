@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Cart - ShopEZ</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<nav id="nav"></nav>
+<div class="container">
+  <div class="card">
+    <h2>My Cart</h2>
+    <div id="msg"></div>
+    <div id="cartItems"></div>
+    <button onclick="window.location.href='order.html'">Proceed to Checkout</button>
+  </div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+async function loadCart() {
+  if (!getToken()) { window.location.href = 'login.html'; return; }
+  try {
+    const data = await apiRequest('/cart', 'GET', null, true);
+    const box = document.getElementById('cartItems');
+    if (!data.cart.items.length) { box.innerHTML = '<p>Your cart is empty.</p>'; return; }
+    box.innerHTML = data.cart.items.map(i => `
+      <div class="cart-item">
+        <span>${i.product.name} x ${i.quantity}</span>
+        <span>₹${i.product.price * i.quantity}
+          <button onclick="removeItem('${i.product._id}')">Remove</button>
+        </span>
+      </div>`).join('');
+  } catch (err) {
+    document.getElementById('msg').innerHTML = `<p class="error">${err.message}</p>`;
+  }
+}
+
+async function removeItem(productId) {
+  await apiRequest('/cart/remove', 'POST', { productId }, true);
+  loadCart();
+}
+
+loadCart();
+</script>
+</body>
+</html>

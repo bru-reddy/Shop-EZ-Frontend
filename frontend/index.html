@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ShopEZ - Products</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+<div class="container">
+  <h2>Our Products</h2>
+  <div id="msg"></div>
+  <div class="grid" id="productGrid"></div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+async function loadProducts() {
+  try {
+    const data = await apiRequest('/products');
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = data.products.map(p => `
+      <div class="card product-card">
+        <img src="${p.image || 'https://via.placeholder.com/220x140'}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p>${p.description}</p>
+        <p class="price">₹${p.price} ${p.discount ? `<span class="discount">(${p.discount}% off)</span>` : ''}</p>
+        <button onclick="shopNow('${p._id}')">Shop Now</button>
+      </div>`).join('');
+  } catch (err) {
+    document.getElementById('msg').innerHTML = `<p class="error">${err.message}</p>`;
+  }
+}
+
+function shopNow(id) {
+  if (!getToken()) { window.location.href = 'login.html'; return; }
+  window.location.href = `order.html?productId=${id}`;
+}
+
+loadProducts();
+</script>
+</body>
+</html>

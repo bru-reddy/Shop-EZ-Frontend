@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Register - ShopEZ</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<nav id="nav"></nav>
+<div class="container">
+  <div class="card" style="max-width:400px;margin:auto;">
+    <h2>Register</h2>
+    <div id="msg"></div>
+    <input id="name" placeholder="Full Name">
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <p style="margin-top:10px;">Already have an account? <a href="login.html">Login</a></p>
+  </div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+async function register() {
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const msg = document.getElementById('msg');
+  try {
+    await apiRequest('/users/register', 'POST', { name, email, password });
+    msg.innerHTML = '<p class="success">Registered! Redirecting to login...</p>';
+    setTimeout(() => window.location.href = 'login.html', 1200);
+  } catch (err) {
+    msg.innerHTML = `<p class="error">${err.message}</p>`;
+  }
+}
+</script>
+</body>
+</html>

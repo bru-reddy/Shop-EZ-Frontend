@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Profile - ShopEZ</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<nav id="nav"></nav>
+<div class="container">
+  <div class="card">
+    <h2>My Profile</h2>
+    <div id="userInfo"></div>
+  </div>
+  <div class="card">
+    <h2>My Orders</h2>
+    <div id="orders"></div>
+  </div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+async function loadProfile() {
+  if (!getToken()) { window.location.href = 'login.html'; return; }
+  const profile = await apiRequest('/users/profile', 'GET', null, true);
+  document.getElementById('userInfo').innerHTML = `
+    <p><strong>Name:</strong> ${profile.user.name}</p>
+    <p><strong>Email:</strong> ${profile.user.email}</p>
+    <p><strong>Address:</strong> ${profile.user.address || 'Not set'}</p>`;
+
+  const data = await apiRequest('/orders', 'GET', null, true);
+  const box = document.getElementById('orders');
+  if (!data.orders.length) { box.innerHTML = '<p>No orders yet.</p>'; return; }
+  box.innerHTML = data.orders.map(o => `
+    <div class="order-item">
+      <span>${o.items.map(i => i.product.name + ' x' + i.quantity).join(', ')}</span>
+      <span>₹${o.totalAmount} - ${o.status}</span>
+    </div>`).join('');
+}
+
+loadProfile();
+</script>
+</body>
+</html>

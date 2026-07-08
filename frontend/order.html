@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Order - ShopEZ</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<nav id="nav"></nav>
+<div class="container">
+  <div class="card" style="max-width:500px;margin:auto;">
+    <h2>Order Details</h2>
+    <div id="msg"></div>
+    <div id="productInfo"></div>
+    <input id="address" placeholder="Shipping Address">
+    <select id="payment">
+      <option value="COD">Cash on Delivery</option>
+      <option value="Card">Credit/Debit Card</option>
+      <option value="UPI">UPI</option>
+    </select>
+    <button onclick="placeOrder()">Confirm Order</button>
+  </div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+const params = new URLSearchParams(window.location.search);
+const productId = params.get('productId');
+
+async function init() {
+  if (!getToken()) { window.location.href = 'login.html'; return; }
+  if (productId) {
+    const data = await apiRequest('/products/' + productId);
+    document.getElementById('productInfo').innerHTML = `
+      <p><strong>${data.product.name}</strong> - ₹${data.product.price}</p>`;
+    await apiRequest('/cart/add', 'POST', { productId, quantity: 1 }, true);
+  }
+}
+
+async function placeOrder() {
+  const address = document.getElementById('address').value;
+  const paymentMethod = document.getElementById('payment').value;
+  const msg = document.getElementById('msg');
+  try {
+    const data = await apiRequest('/orders', 'POST', { address, paymentMethod }, true);
+    msg.innerHTML = `<p class="success">Order placed! Total: ₹${data.order.totalAmount}</p>`;
+    setTimeout(() => window.location.href = 'profile.html', 1500);
+  } catch (err) {
+    msg.innerHTML = `<p class="error">${err.message}</p>`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
