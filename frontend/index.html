@@ -1,44 +1,254 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>ShopEZ - Products</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ShopEZ | Online Shopping</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
+
 <body>
-<nav id="nav"></nav>
-<div class="container">
-  <h2>Our Products</h2>
-  <div id="msg"></div>
-  <div class="grid" id="productGrid"></div>
-</div>
 
-<script src="js/api.js"></script>
-<script src="js/nav.js"></script>
-<script>
-async function loadProducts() {
-  try {
-    const data = await apiRequest('/products');
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = data.products.map(p => `
-      <div class="card product-card">
-        <img src="${p.image || 'https://via.placeholder.com/220x140'}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>${p.description}</p>
-        <p class="price">₹${p.price} ${p.discount ? `<span class="discount">(${p.discount}% off)</span>` : ''}</p>
-        <button onclick="shopNow('${p._id}')">Shop Now</button>
-      </div>`).join('');
-  } catch (err) {
-    document.getElementById('msg').innerHTML = `<p class="error">${err.message}</p>`;
-  }
-}
+    <!-- Navigation -->
+    <nav id="nav"></nav>
 
-function shopNow(id) {
-  if (!getToken()) { window.location.href = 'login.html'; return; }
-  window.location.href = `order.html?productId=${id}`;
-}
+    <!-- Hero Section -->
+    <section class="hero">
 
-loadProducts();
-</script>
+        <div class="hero-content">
+
+            <h1>Discover Amazing Deals</h1>
+
+            <p>
+                Shop the latest electronics, gadgets,
+                accessories and much more with exciting discounts.
+            </p>
+
+            <a href="#products">
+                <button class="hero-btn">
+                    Shop Now
+                </button>
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Features -->
+
+    <section class="features">
+
+        <div class="feature-box">
+
+            <i class="fa-solid fa-truck-fast"></i>
+
+            <h3>Fast Delivery</h3>
+
+            <p>Delivery across India within 2-5 days.</p>
+
+        </div>
+
+        <div class="feature-box">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+            <h3>Secure Payment</h3>
+
+            <p>100% Secure payment gateway.</p>
+
+        </div>
+
+        <div class="feature-box">
+
+            <i class="fa-solid fa-rotate-left"></i>
+
+            <h3>Easy Returns</h3>
+
+            <p>7-Day hassle free return policy.</p>
+
+        </div>
+
+        <div class="feature-box">
+
+            <i class="fa-solid fa-tags"></i>
+
+            <h3>Best Offers</h3>
+
+            <p>Enjoy discounts on every purchase.</p>
+
+        </div>
+
+    </section>
+
+    <!-- Products -->
+
+    <section class="products-section" id="products">
+
+        <div class="section-title">
+
+            <h2>Trending Products</h2>
+
+            <p>Explore our latest collection.</p>
+
+        </div>
+
+        <div id="msg"></div>
+
+        <div class="grid" id="productGrid">
+
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+
+    <footer>
+
+        <div class="footer-content">
+
+            <h2>ShopEZ</h2>
+
+            <p>Your One-Stop Online Shopping Destination</p>
+
+            <div class="footer-icons">
+
+                <i class="fab fa-facebook"></i>
+
+                <i class="fab fa-instagram"></i>
+
+                <i class="fab fa-twitter"></i>
+
+                <i class="fab fa-linkedin"></i>
+
+            </div>
+
+            <p class="copyright">
+
+                © 2026 ShopEZ. All Rights Reserved.
+
+            </p>
+
+        </div>
+
+    </footer>
+
+    <!-- Scripts -->
+
+    <script src="js/api.js"></script>
+
+    <script src="js/nav.js"></script>
+
+    <script>
+
+        async function loadProducts() {
+
+            try {
+
+                const data = await apiRequest('/products');
+
+                const grid = document.getElementById('productGrid');
+
+                if (!data.products.length) {
+
+                    grid.innerHTML = `
+                    <div class="empty-products">
+
+                        <i class="fa-solid fa-box-open"></i>
+
+                        <h3>No Products Available</h3>
+
+                        <p>Please add products from the admin dashboard.</p>
+
+                    </div>
+                    `;
+
+                    return;
+
+                }
+
+                grid.innerHTML = data.products.map(p => `
+
+                <div class="product-card">
+
+                    <img src="${p.image || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500'}"
+                        alt="${p.name}">
+
+                    <div class="product-info">
+
+                        <h3>${p.name}</h3>
+
+                        <p>${p.description}</p>
+
+                        <div class="price-row">
+
+                            <span class="price">
+
+                                ₹${p.price}
+
+                            </span>
+
+                            ${p.discount ?
+                            `<span class="discount">${p.discount}% OFF</span>`
+                            : ""}
+
+                        </div>
+
+                        <button onclick="shopNow('${p._id}')">
+
+                            <i class="fa-solid fa-cart-shopping"></i>
+
+                            Buy Now
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                `).join("");
+
+            }
+
+            catch (err) {
+
+                document.getElementById("msg").innerHTML =
+
+                    `<p class="error">${err.message}</p>`;
+
+            }
+
+        }
+
+        function shopNow(id) {
+
+            if (!getToken()) {
+
+                window.location.href = "login.html";
+
+                return;
+
+            }
+
+            window.location.href = `order.html?productId=${id}`;
+
+        }
+
+        loadProducts();
+
+    </script>
+
 </body>
+
 </html>
